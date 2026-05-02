@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import QRCode from 'https://esm.sh/qrcode@1.5.4';
 import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from './config.js';
 
 const sb = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -218,7 +219,7 @@ async function generateQR() {
     </div>
     <p class="muted center">家族にこのQRをスキャンしてもらってください</p>
   `;
-  await window.QRCode.toCanvas($('qr-canvas'), payload, { width: 280, margin: 1 });
+  await QRCode.toCanvas($('qr-canvas'), payload, { width: 280, margin: 1 });
 }
 
 // ======= ビュー: 支払い（QR読み取り）=======
