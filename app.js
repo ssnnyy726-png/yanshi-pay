@@ -50,8 +50,8 @@ function playSuccessSound() {
     if (ctx.state === 'suspended') ctx.resume();
     const now = ctx.currentTime;
     const notes = [
-      { freq: 880, start: 0, dur: 0.18 },     // A5
-      { freq: 1318.5, start: 0.15, dur: 0.35 }, // E6
+      { freq: 880, start: 0, dur: 0.18 },
+      { freq: 1318.5, start: 0.15, dur: 0.35 },
     ];
     notes.forEach(n => {
       const osc = ctx.createOscillator();
@@ -65,7 +65,7 @@ function playSuccessSound() {
       osc.start(now + n.start);
       osc.stop(now + n.start + n.dur + 0.05);
     });
-  } catch (e) { /* ignore */ }
+  } catch (e) {}
 }
 
 async function stopScanner() {
@@ -134,7 +134,7 @@ function renderAuth() {
       options: { data: { display_name: name } }
     });
     if (error) return showAlert(error.message, 'error');
-    showAlert('登録完了。確認メールが届く場合があります', 'success');
+    showAlert('登録完了', 'success');
     await refresh();
   };
 }
@@ -197,7 +197,7 @@ function renderTxItem(t) {
   `;
 }
 
-// ======= ビュー: 受け取り（QR生成）=======
+// ======= ビュー: 受け取り =======
 function renderReceive() {
   root.innerHTML = `
     <div class="brand"><div class="brand-logo">受け取る</div></div>
@@ -249,7 +249,7 @@ async function generateQR() {
   await QRCode.toCanvas($('qr-canvas'), payload, { width: 280, margin: 1 });
 }
 
-// ======= ビュー: 支払い（QR読み取り）=======
+// ======= ビュー: 支払い =======
 function renderPay() {
   root.innerHTML = `
     <div class="brand"><div class="brand-logo">支払う</div></div>
@@ -359,7 +359,7 @@ function renderHistory() {
   `;
 }
 
-// ======= ビュー: 家族 / 設定 =======
+// ======= ビュー: 設定 =======
 function renderSettings() {
   const isAdmin = state.profile.is_admin;
   root.innerHTML = `
@@ -484,7 +484,6 @@ async function refresh(view) {
   await render();
 }
 
-// ======= 起動 =======
 sb.auth.onAuthStateChange((event) => {
   if (event === 'SIGNED_OUT') {
     state.user = null; state.profile = null;
@@ -492,7 +491,4 @@ sb.auth.onAuthStateChange((event) => {
   }
 });
 
-(async () => {
-  await loadAll();
-  await render();
-})();
+(async () => { await loadAll(); await render(); })();
