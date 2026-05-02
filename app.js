@@ -41,6 +41,33 @@ function showAlert(message, type = 'info') {
   setTimeout(() => div.remove(), 4000);
 }
 
+// 支払い成功音（PayPay風の2音チャイム）
+let _audioCtx = null;
+function playSuccessSound() {
+  try {
+    _audioCtx = _audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const ctx = _audioCtx;
+    if (ctx.state === 'suspended') ctx.resume();
+    const now = ctx.currentTime;
+    const notes = [
+      { freq: 880, start: 0, dur: 0.18 },     // A5
+      { freq: 1318.5, start: 0.15, dur: 0.35 }, // E6
+    ];
+    notes.forEach(n => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.value = n.freq;
+      gain.gain.setValueAtTime(0, now + n.start);
+      gain.gain.linearRampToValueAtTime(0.25, now + n.start + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + n.start + n.dur);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now + n.start);
+      osc.stop(now + n.start + n.dur + 0.05);
+    });
+  } catch (e) { /* ignore */ }
+}
+
 async function stopScanner() {
   if (state.scanner) {
     try { await state.scanner.stop(); } catch {}
@@ -312,6 +339,7 @@ function showConfirm(token, receiver) {
       scanInProgress = false;
       startScanner();
     } else {
+      playSuccessSound();
       showAlert(`${token.amount}ptを支払いました`, 'success');
       await refresh('home');
     }
